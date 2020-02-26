@@ -132,7 +132,8 @@ def cost(w, x, y):
     print('1 ', len(t2))
     t2 = t2.reshape(1, len(t2))
     print('t2: ', t2)
-    t1_2 = t2*y
+    print('y: ', y)
+    t1_2 = t2@y
     t4 = np.log(1-s)
     t3 = 1-y
     t3_4 = t3*t4
