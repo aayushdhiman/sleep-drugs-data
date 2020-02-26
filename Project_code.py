@@ -89,7 +89,8 @@ CYMDOSE = standardize(X[:, 13:14])
 MELDOSE = standardize(X[:, 14:15])
 TELDOSE = standardize(X[:, 15:16])
 
-
+x = np.hstack((TTOREM, PERWAKE, PERREM, PERLIGHT, PERDEEP, NWAKES, X[:, 6:13], 
+              CYMDOSE, MELDOSE, TELDOSE))
 
 
 
