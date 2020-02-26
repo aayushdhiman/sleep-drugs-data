@@ -24,7 +24,7 @@ def standardize(x):
 
 
 #------------------------------------------------------------------------------
-#                               Create Data
+#                               Setting Up
 #------------------------------------------------------------------------------
 
 '''
@@ -45,6 +45,7 @@ def standardize(x):
 17    CYMDOSE         13
 18    MELDOSE         14
 19    TEMDOSE         15
+
 22    CYM30           Y0
 23    CYM60           Y1
 24    MEL3            Y2
@@ -61,6 +62,10 @@ def standardize(x):
 
 '''
 
+global save_Xtest
+global save_Ytest
+global save_Xval
+global save_Yval
 
 
 fileName = 'Dataset.csv'
@@ -75,10 +80,11 @@ data = np.loadtxt(raw_data, usecols = (1, 2, 3, 4, 5, 6, 10, 11,12,13,14,15,16,
 totally_float_data = data[(data != 'NA').all(axis=1)]
 float_data = totally_float_data.astype(float)
 
-
+#separating
 y = float_data[:, 16:29]
 X = float_data[:, :16]
 
+#standardizing
 TTOREM = standardize(X[:, 0:1])
 PERWAKE = standardize(X[:, 1:2])
 PERREM = standardize(X[:, 2:3])
@@ -89,34 +95,135 @@ CYMDOSE = standardize(X[:, 13:14])
 MELDOSE = standardize(X[:, 14:15])
 TELDOSE = standardize(X[:, 15:16])
 
+#Concatination
 x = np.hstack((TTOREM, PERWAKE, PERREM, PERLIGHT, PERDEEP, NWAKES, X[:, 6:13], 
               CYMDOSE, MELDOSE, TELDOSE))
 
+#creating training and testing data
 x, save_Xtest, y, save_Ytest = model_selection.train_test_split(x, y, 
-                            train_size = 80, test_size=.20,random_state=101)
+                            train_size = 70, test_size=.30,random_state=101)
 
+#Creating test and validation data
 save_Xtest, save_Xval, save_Ytest, save_Yval = model_selection.train_test_split(
            save_Xtest, save_Ytest,train_size=.70,test_size=.30,random_state=101)
 
-w = np.zeros((80, 13))
+#Weights
+w = np.zeros((16, 13))
 a = .5
 it = 10000
 
+
+#------------------------------------------------------------------------------
+
+
+#------------------------------------------------------------------------------
+def sigmoid(z):
+#    z = np.dot(x, w)
+    e = np.exp(-z)
+    
+    return 1/(1+e)
+
+
+#------------------------------------------------------------------------------
+def cost(w, x, y):
+    
+    s = sigmoid(np.dot(x, w))
+    t2 = np.log(s)
+    t1_2 = y*t2
+    t4 = np.log(1-s)
+    t3 = 1-y
+    t3_4 = t3*t4
+    top = t1_2+t3_4
+    t = sum(top)
+
+    return (-t)/len(x)
+
+#------------------------------------------------------------------------------
+def gradient(w, x, y):
+    
+    s = sigmoid(np.dot(x, w))
+    diff = s-y
+    val = np.dot(x.transpose(), diff)
+#    print(val)
+    return val/len(y)
+
+#------------------------------------------------------------------------------ 
+def run(w, x, y):
+    
+#    cA = []
+    wA = []
+    i = 0
+    
+    L2 = np.linalg.norm(gradient(w, x, y))
+    
+    while i < it and L2 != .001:
+        
+        gd = gradient(w, x, y)
+        g = gd
+        L2 = np.linalg.norm(g)
+        
+        w = w - (a*g)
+#        print('test ', a*g)
+#        print('CHECK IF SLICING IS CORRECT OR NOT')
+        wA.append(w)
+#        cA.append(cost(w, x, y))
+        if i%500==0:
+            print('iterations: %5i , norm: %1.17f' % (i, L2))
+        i += 1
+        
+#    return w, wA, cA
+#    print('\niterations: ', i)
+#    return w, cA
+    return w
+    
+#------------------------------------------------------------------------------ 
+def train(w, x, y):
+    '''
+    I = 0
+    for I in range(500):
+        for i in range(len(w[0])): 
+            w[:, i] = run(w[:, i], x, y[:, i])
+        I+=1
+    '''
+    
+    for i in range(len(w[0])): 
+            w[:, i] = run(w[:, i], x, y[:, i])
+            
+    return w
+    
+#------------------------------------------------------------------------------
+def processData(w, x, y):
+    
+    z = np.dot(x, w)
+    prob = sigmoid(z)
+    
+    pred = np.argmax(prob, axis = 1).reshape(len(x), 1)
+    Y = np.argmax(y, axis = 1).reshape(len(y), 1)
+    
+    diff = Y - pred
+    
+    co = np.count_nonzero(diff)
+    
+    e = co/len(diff)
+    
+    ac = 1-e
+
+    
+    return e, ac, prob, pred, Y
+
+    
 #------------------------------------------------------------------------------
 
 
 
 
+#******************************************************************************
+
+w = train(w, x, y)
 
 
 
 
+#******************************************************************************
 
-
-
-
-
-
-
-#------------------------------------------------------------------------------
 
