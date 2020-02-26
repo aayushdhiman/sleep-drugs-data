@@ -92,7 +92,11 @@ TELDOSE = standardize(X[:, 15:16])
 x = np.hstack((TTOREM, PERWAKE, PERREM, PERLIGHT, PERDEEP, NWAKES, X[:, 6:13], 
               CYMDOSE, MELDOSE, TELDOSE))
 
+x, save_Xtest, y, save_Ytest = model_selection.train_test_split(x, y, 
+                            train_size = 80, test_size=.20,random_state=101)
 
+save_Xtest, save_Xval, save_Ytest, save_Yval = model_selection.train_test_split(
+           save_Xtest, save_Ytest,train_size=.70,test_size=.30,random_state=101)
 
 #------------------------------------------------------------------------------
 
