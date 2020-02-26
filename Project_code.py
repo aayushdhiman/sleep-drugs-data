@@ -98,6 +98,10 @@ x, save_Xtest, y, save_Ytest = model_selection.train_test_split(x, y,
 save_Xtest, save_Xval, save_Ytest, save_Yval = model_selection.train_test_split(
            save_Xtest, save_Ytest,train_size=.70,test_size=.30,random_state=101)
 
+w = np.zeros((80, 13))
+a = .5
+it = 10000
+
 #------------------------------------------------------------------------------
 
 
