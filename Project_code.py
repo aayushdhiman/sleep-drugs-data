@@ -129,12 +129,16 @@ def cost(w, x, y):
     
     s = sigmoid(np.dot(x, w))
     t2 = np.log(s)
-    t1_2 = y*t2
+    print('1 ', len(t2))
+    t2 = t2.reshape(1, len(t2))
+    print('t2: ', t2)
+    t1_2 = t2*y
     t4 = np.log(1-s)
     t3 = 1-y
     t3_4 = t3*t4
     top = t1_2+t3_4
     t = sum(top)
+    print('t len: ', len(t))
 
     return (-t)/len(x)
 
@@ -170,11 +174,14 @@ def run(w, x, y):
         if i%500==0:
             print('iterations: %5i , norm: %1.17f' % (i, L2))
         i += 1
+        Ct = cost(w, x, y)
+        print('train cost: ', Ct)
+        Cv = cost(w, save_Xval, save_Yval)
         
 #    return w, wA, cA
 #    print('\niterations: ', i)
 #    return w, cA
-    return w
+    return w, Ct, Cv
     
 #------------------------------------------------------------------------------ 
 def train(w, x, y):
@@ -186,10 +193,16 @@ def train(w, x, y):
         I+=1
     '''
     
+    Ctrain = []
+    Cval = []
+    
     for i in range(len(w[0])): 
-            w[:, i] = run(w[:, i], x, y[:, i])
-            
-    return w
+            w[:, i], Ct, Cv = run(w[:, i], x, y[:, i])
+            Ctrain.append(Ct)
+            Cval.append(Cv)
+
+    
+    return w, Ctrain, Cval
     
 #------------------------------------------------------------------------------
 def processData(w, x, y):
@@ -219,7 +232,7 @@ def processData(w, x, y):
 
 #******************************************************************************
 
-w = train(w, x, y)
+w, Ctrain, Cval = train(w, x, y)
 
 
 
