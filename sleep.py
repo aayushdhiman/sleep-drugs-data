@@ -102,9 +102,13 @@ model.add(layers.Dense(64, activation='relu'))
 model.add(layers.Dense(1))
 model.compile(optimizer='rmsprop', loss='mse', metrics=['mae'])
 
-history = model.fit(x_train, y_train, 
-                    epochs=100, batch_size=1)
+yTest = np.argmax(y_test, axis=1)
+yTrain = np.argmax(y_train, axis=1)
 
+#'''
+history = model.fit(x_train, yTrain, 
+                    epochs=100, batch_size=1)
+'''
 mae_history = history.history['mean_absolute_error']
 test_mse_score, test_mae_score = model.evaluate(x_test, y_test)
 
@@ -127,3 +131,7 @@ ax1.set_title('Mean Absolute Error')
 ax1.set_xlabel('Epochs')
 ax1.set_ylabel('Mean Absolute Error')
 ax1.plot(mae_history, range(len(mae_history)))
+'''
+
+
+
