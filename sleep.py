@@ -107,7 +107,7 @@ yTrain = np.argmax(y_train, axis=1)
 
 #'''
 history = model.fit(x_train, yTrain, 
-                    epochs=100, batch_size=1)
+                    epochs=105, batch_size=10)
 '''
 mae_history = history.history['mean_absolute_error']
 test_mse_score, test_mae_score = model.evaluate(x_test, y_test)
