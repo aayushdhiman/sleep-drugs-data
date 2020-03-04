@@ -101,21 +101,22 @@ def create_data():
 x_train, x_test, y_train, y_test = create_data()
 
 model = models.Sequential()
-model.add(layers.Dense(64, activation='relu', input_shape=(len(x_train[0]),)))
-model.add(layers.Dense(64, activation='relu'))
-model.add(layers.Dense(1))
+model.add(layers.Dense(100, activation='relu', input_shape=(len(x_train[0]),)))
+model.add(layers.Dense(100, activation='relu'))
+model.add(layers.Dense(100, activation='relu'))
+model.add(layers.Dense(12, activation='softmax'))
 model.compile(optimizer='rmsprop', loss='mse', metrics=['mae'])
 
 yTest = np.argmax(y_test, axis=1)
 yTrain = np.argmax(y_train, axis=1)
 
 #'''
-history = model.fit(x_train, yTrain, 
-                    epochs=4, batch_size=3, validation_split=.1)
+history = model.fit(x_train, y_train, 
+                    epochs=300, batch_size=5, validation_split=.2)
 
 mae_history = history.history['mean_absolute_error']
 val_mae_history = history.history['val_mean_absolute_error']
-test_mse_score, test_mae_score = model.evaluate(x_test, yTest)
+test_mse_score, test_mae_score = model.evaluate(x_test, y_test)
 
 predicted_drugs = model.predict(x_test)
 
